@@ -22,4 +22,7 @@ use Illuminate\Support\Facades\Auth;
 Route::get('/',[DisplayController::class,'index']);
 Route::resource('/shops','AppController');
 Auth::routes();
-Route::resource('/reviews','ReviewController');
+Route::group(['middleware'=>'auth'],function(){
+    Route::resource('/reviews','ReviewController');
+    Route::resource('/users','UserController');
+});

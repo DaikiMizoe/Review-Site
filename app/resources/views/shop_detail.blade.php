@@ -1,18 +1,37 @@
 @extends('layouts.layout')
 @section('content')
     <div>
-        <h2>店舗詳細</h2>
-        <a href="{{route('reviews.index')}}"><button>レビュー投稿</button></a>
+        <div>
+            <h2>店舗詳細</h2>
+            <a href="{{route('reviews.create','id'.'='.$shop->id)}}"><button>レビュー投稿</button></a>
+        </div>
+        <div>
+            <div>
+                <img src="{{asset('storage/images/'.$shop['image'])}}">
+            </div>
+            <div>
+                <p>{{$shop['name']}}</p>
+                <p>{{$shop['address']}}</p>
+            </div>
+            <div>
+                <p>平均点{{$point}}点</p>
+            </div>
+        </div>
     </div>
     <div>
         <div>
-            <img src="{{asset('storage/images/'.$shop['image'])}}">
+            <h3>レビュー一覧</h3>
         </div>
         <div>
-            <p>{{$shop['name']}}</p>
-            <p>{{$shop['address']}}</p>
+            @foreach($reviews as $review)
+                <div>
+                    <img src="{{asset('storage/images/'.$review['image'])}}">
+                </div>
+                <div>
+                    <p>{{$review['title']}}</p>
+                    <p>{{$review['comment']}}</p>
+                </div>
+            @endforeach
         </div>
-        <div>
-            <p>{{$shop['point']}}</p>
-        </div>
+    </div>
 @endsection

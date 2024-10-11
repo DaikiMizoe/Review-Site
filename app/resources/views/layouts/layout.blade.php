@@ -29,9 +29,18 @@
                 </a>
             </div>
             <div>
-                <a href="{{route('login')}}">ログイン</a>
-                /
-                <a href="{{route('register')}}">会員登録</a>
+                @if(Auth::check())
+                    <a href="{{route('users.show',Auth::user()->id)}}">マイページ</a>
+                    /
+                    <a href="#">ログアウト</a>
+                    <form action="{{route('logout')}}" method="POST" style="display: none;">
+                        @csrf
+                    </form>
+                @else
+                    <a href="{{route('login')}}">ログイン</a>
+                    /
+                    <a href="{{route('register')}}">会員登録</a>
+                @endif
             </div>
         </nav>
     </div>

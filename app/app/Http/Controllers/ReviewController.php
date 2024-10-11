@@ -3,6 +3,11 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\User;
+use App\Review;
+use App\Shop;
+use illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class ReviewController extends Controller
 {
@@ -23,7 +28,7 @@ class ReviewController extends Controller
      */
     public function create()
     {
-        return view('review.review_conf');
+        return view('review.review_post');
     }
 
     /**
@@ -34,7 +39,30 @@ class ReviewController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $review = new Review;
+        $shop = Shop::where('id',$request->shop_id);
+        $user = Auth::user();
+
+        $review->title = $request->title;
+        $review->point = $request->point;
+        $review->comment = $request->comment;
+        $review->shop_id = $request->shop_id;
+        $review->user_id = $user->id;
+        $path = $request->file('image')->store('public/images');
+        $filename = basename($path);
+        $review->image = $filename;
+
+        $review->save();
+
+        $point = Review::where('shop_id',$request->shop_id)->pluck('point');
+        $sum = 0;
+        foreach($point as $result){
+            $sum += $result;
+        }
+        //dd();
+
+        $shop->update(['point'=>$sum]);
+        return view('review.review_comp');
     }
 
     /**

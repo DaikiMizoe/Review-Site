@@ -2,12 +2,12 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
+use App\User;
 use App\Shop;
 use App\Review;
-use App\User;
+use Illuminate\Http\Request;
 
-class AppController extends Controller
+class UserController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -16,7 +16,7 @@ class AppController extends Controller
      */
     public function index()
     {
-        //return view('shop_detail');
+        //
     }
 
     /**
@@ -43,24 +43,25 @@ class AppController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  int  $id
+     * @param  \App\User  $user
      * @return \Illuminate\Http\Response
      */
-    public function show(Shop $shop)
+    public function show(User $user)
     {
-        $reviews = Review::where('shop_id',$shop['id'])->get();
-        $point = $reviews->pluck('point')->avg();
-        //dd($point);
-        return view('shop_detail',['shop'=>$shop,'reviews'=>$reviews,'point'=>$point]);
+        $review = Review::where('user_id',$user['id'])->get();
+        $shop = $review->pluck('shop_id');
+        $shop_name = Shop::where('id',$shop)->get();
+        //dd($shop_name);
+        return view('users.mypage',['users'=>$user,'reviews'=>$review,'names'=>$shop_name]);
     }
 
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  int  $id
+     * @param  \App\User  $user
      * @return \Illuminate\Http\Response
      */
-    public function edit($id)
+    public function edit(User $user)
     {
         //
     }
@@ -69,10 +70,10 @@ class AppController extends Controller
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
+     * @param  \App\User  $user
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(Request $request, User $user)
     {
         //
     }
@@ -80,10 +81,10 @@ class AppController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  int  $id
+     * @param  \App\User  $user
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(User $user)
     {
         //
     }
