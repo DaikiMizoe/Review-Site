@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AppController;
 use App\Http\Controllers\DisplayController;
+use App\Http\Controllers\AdminController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 
@@ -25,4 +26,11 @@ Auth::routes();
 Route::group(['middleware'=>'auth'],function(){
     Route::resource('/reviews','ReviewController');
     Route::resource('/users','UserController');
+    Route::resource('/reports','ReportController');
+});
+
+Route::group(['middleware'=>'auth'],function(){
+    Route::get('/admin',[AdminController::class,'index']);
+    Route::get('/admin_hide/{id}',[AdminController::class,'HideReview'])->name('hide.review');
+    Route::get('/admin_del/{id}',[AdminController::class,'UserDelete'])->name('del.user');
 });

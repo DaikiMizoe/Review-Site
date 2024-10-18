@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Shop;
 use App\Review;
 use App\User;
+use illuminate\Support\Facades\Auth;
 
 class AppController extends Controller
 {
@@ -26,7 +27,7 @@ class AppController extends Controller
      */
     public function create()
     {
-        //
+        return view('shops.shop_register');
     }
 
     /**
@@ -37,7 +38,27 @@ class AppController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $shop = new Shop;
+        $user = Auth::user();
+        $role = User::where('id',$user->id);
+        if($request->file('image') !== null){
+            $path = $request->file('image')->store('public/images');
+            $image = basename($path);
+        } else{
+            $image = null;
+        }
+
+        $shop->name = $request->name;
+        $shop->address = $request->address;
+        $shop->comment = $request->comment;
+        $shop->image = $image;
+        $shop->user_id = $user->id;
+
+        $shop->save();
+
+        $role->update(['role'=>2]);
+
+        return redirect(route('users.show',Auth::user()->id));
     }
 
     /**
@@ -48,10 +69,11 @@ class AppController extends Controller
      */
     public function show(Shop $shop)
     {
-        $reviews = Review::where('shop_id',$shop['id'])->get();
-        $point = $reviews->pluck('point')->avg();
-        //dd($point);
-        return view('shop_detail',['shop'=>$shop,'reviews'=>$reviews,'point'=>$point]);
+        $reviews = Review::where('shop_id',$shop['id'])->latest()->get();
+
+        $num = (floor($shop['point'] * 10)/10);
+        //dd($num);
+        return view('shops.shop_detail',['shop'=>$shop,'reviews'=>$reviews,'point'=>$num]);
     }
 
     /**

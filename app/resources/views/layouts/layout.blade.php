@@ -27,15 +27,27 @@
                 <a href="{{url('/')}}">
                     Really Delicious!
                 </a>
+                <a href="{{url('/admin')}}">
+                    管理者はこちら
+                </a>
             </div>
             <div>
                 @if(Auth::check())
                     <a href="{{route('users.show',Auth::user()->id)}}">マイページ</a>
                     /
-                    <a href="#">ログアウト</a>
-                    <form action="{{route('logout')}}" method="POST" style="display: none;">
+                    <a href="#" id="logout">ログアウト</a>
+                    <form id="logout-form" action="{{route('logout')}}" method="POST" style="display: none;" onclick="return confirm('ログアウトしますか？')">
                         @csrf
                     </form>
+                    <script>
+                        document.getElementById('logout').addEventListener('click',function(event){
+                            event.preventDefault();
+                            $result = window.confirm('ログアウトしますか？');
+                            if($result == true){
+                                document.getElementById('logout-form').submit();
+                            }
+                        });
+                    </script>
                 @else
                     <a href="{{route('login')}}">ログイン</a>
                     /

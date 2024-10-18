@@ -31,6 +31,9 @@
                     <p>{{$review['title']}}</p>
                     <p>{{$review['comment']}}</p>
                 </div>
+                <div>
+                    <a href="{{route('reports.create','id'.'='.$review['id'])}}">報告</a>
+                </div>
             @endforeach
         </div>
     </div>

@@ -18,7 +18,7 @@ class ReviewController extends Controller
      */
     public function index()
     {
-        return view('review.review_post');
+        //return view('review.review_post');
     }
 
     /**
@@ -48,20 +48,22 @@ class ReviewController extends Controller
         $review->comment = $request->comment;
         $review->shop_id = $request->shop_id;
         $review->user_id = $user->id;
-        $path = $request->file('image')->store('public/images');
-        $filename = basename($path);
-        $review->image = $filename;
+        if($request->file('image') !== null){
+            $path = $request->file('image')->store('public/images');
+            $filename = basename($path);
+            $review->image = $filename;
+        }else{
+            $review->image = null;
+        }
 
         $review->save();
 
         $point = Review::where('shop_id',$request->shop_id)->pluck('point');
-        $sum = 0;
-        foreach($point as $result){
-            $sum += $result;
-        }
-        //dd();
+        $avg_point = $point->avg();
 
-        $shop->update(['point'=>$sum]);
+        //dd($point->avg());
+
+        $shop->update(['point'=>$avg_point]);
         return view('review.review_comp');
     }
 
@@ -84,7 +86,9 @@ class ReviewController extends Controller
      */
     public function edit($id)
     {
-        //
+        $review = Review::find($id);
+        //dd();
+        return view('review.review_edit',['review'=>$review]);
     }
 
     /**
@@ -96,7 +100,18 @@ class ReviewController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        $review = Review::find($id);
+        $path = $request->file('image')->store('public/images');
+        $image = basename($path);
+
+        $review->title = $request->title;
+        $review->point = $request->point;
+        $review->comment = $request->comment;
+        $review->image = $image;
+
+        $review->save();
+
+        return redirect(route('users.show',Auth::user()->id));
     }
 
     /**
@@ -107,6 +122,9 @@ class ReviewController extends Controller
      */
     public function destroy($id)
     {
-        //
+        $review = Review::find($id);
+        $review->delete();
+
+        return redirect(route('users.show',Auth::user()->id));
     }
 }

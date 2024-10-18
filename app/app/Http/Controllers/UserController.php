@@ -6,6 +6,7 @@ use App\User;
 use App\Shop;
 use App\Review;
 use Illuminate\Http\Request;
+use illuminate\Support\Facades\Auth;
 
 class UserController extends Controller
 {
@@ -48,11 +49,24 @@ class UserController extends Controller
      */
     public function show(User $user)
     {
-        $review = Review::where('user_id',$user['id'])->get();
-        $shop = $review->pluck('shop_id');
-        $shop_name = Shop::where('id',$shop)->get();
-        //dd($shop_name);
-        return view('users.mypage',['users'=>$user,'reviews'=>$review,'names'=>$shop_name]);
+        $review = Review::where('user_id',$user['id'])->latest()->get();
+        if($review->isNotEmpty()){
+            //$result = $review->get();
+            $shop = $review->pluck('shop_id');
+            $shop_name = Shop::where('id',$shop)->get();
+            $message = 'レビュー一覧';
+        } else{
+            $shop = null;
+            $shop_name = null;
+            $message = 'まだレビューはありません';
+        }
+        //dd($result);
+        return view('users.mypage',[
+            'users'=>$user,
+            'reviews'=>$review,
+            'names'=>$shop_name,
+            'message'=>$message,
+        ]);
     }
 
     /**
@@ -63,7 +77,7 @@ class UserController extends Controller
      */
     public function edit(User $user)
     {
-        //
+        return view('users.user_edit',['user'=>$user]);
     }
 
     /**
@@ -75,7 +89,15 @@ class UserController extends Controller
      */
     public function update(Request $request, User $user)
     {
-        //
+        $columns = ['name','email'];
+
+        foreach($columns as $column){
+            $user->$column = $request->$column;
+        }
+
+        $user->save();
+
+        return redirect(route('users.show',Auth::user()->id));
     }
 
     /**
